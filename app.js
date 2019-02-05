@@ -57,9 +57,12 @@ let patrol = random(eval(process.env.PATROL_MIN), eval(process.env.PATROL_MAX));
 //巡回回数カウント
 let count = 1;
 
+//headlessモード
+const headless = true;
+
 async function run() {
   const browser = await puppeteer.launch({
-  	headless: false,
+    headless: headless,
   	slowMo: 50,
     defaultViewport: null,
     args: [
@@ -83,6 +86,14 @@ async function run() {
   ));
   const page = (await browser.pages())[0];
   await page.emulate(options.device);
+  
+  //ipアドレス確認
+  if (headless == false) {
+    const page_ipinfo = await browser.newPage();
+    page_ipinfo.goto("https://www.cman.jp/network/support/go_access.cgi");
+    await delay(10000);
+    await page.bringToFront();
+  }
 
   //スクロール処理
   async function autoScroll(page) {
@@ -115,14 +126,11 @@ async function run() {
   async function patrol(page, ) {
   }
 
-  await access(page, mysite.origin, "https://google.com");
+  await access(page, mysite.origin, "https://www.google.com/");
 
   //debug
   console.log("参照サイトにアクセス".red);
   console.log("現在のURL: ".blue + colors.underline.blue(page.url()) + "\n");
-
-  await delay(wait.min, wait.max);
-  await autoScroll(page);
 
   //参照サイトを巡回、変数リセット
   patrol = random(eval(process.env.MYSITE_PATROL_MIN), eval(process.env.MYSITE_PATROL_MAX));
@@ -139,7 +147,7 @@ async function run() {
 
     await delay(delayTime);
     await autoScroll(page);
-    anchor = await page.$$(`a[href*="${mysite.matchLink}"]`);
+    anchor = await page.$$(`a[href^="${mysite.matchLink}"]`);
     linkLength = anchor.length;
 
     //debug
@@ -173,7 +181,7 @@ async function run() {
   //**************************************************
 
   //ターゲットにアクセス
-  anchor = await page.$$(`a[href*="${target.origin}"]`);
+  anchor = await page.$$(`a[href^="${target.origin}"]`);
   linkLength = anchor.length;
   if(linkLength >= 1) {
     targetIndex = random(1, linkLength);
@@ -205,7 +213,7 @@ async function run() {
 
     await delay(delayTime);
     await autoScroll(page);
-    anchor = await page.$$(`a[href*="${target.matchLink}"]`);
+    anchor = await page.$$(`a[href^="${target.matchLink}"]`);
     linkLength = anchor.length;
 
     //debug
