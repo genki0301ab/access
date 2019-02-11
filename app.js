@@ -6,7 +6,7 @@ const deviceDescriptors = require("puppeteer/DeviceDescriptors");
 const colors = require("colors");
 const delay = require("delay");
 
-const input = process.argv[2];
+const input = process.argv.pop();
 
 const options = {
   device: deviceDescriptors[eval(Math.floor(Math.random() * deviceDescriptors.length - 1))]
