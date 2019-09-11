@@ -8,7 +8,7 @@ const delay = require("delay");
 
 const input = process.argv.pop();
 
-const options = {
+let options = {
   device: deviceDescriptors[eval(Math.floor(Math.random() * deviceDescriptors.length - 1))]
 };
 
@@ -37,8 +37,8 @@ let target = {
 };
 
 let wait = {
-  min: 10000,
-  max: 60000
+  min: 1000,
+  max: 10000
 };
 let delayTime = random(wait.min, wait.max); 
 let completeTime = 0;
@@ -58,7 +58,7 @@ let patrol = random(eval(process.env.PATROL_MIN), eval(process.env.PATROL_MAX));
 let count = 1;
 
 //headlessモード
-const headless = true;
+const headless = false;
 
 async function run() {
   const browser = await puppeteer.launch({
@@ -75,7 +75,7 @@ async function run() {
       //"--proxy-server=",
       //"--no-referrers"
     ],
-    devtools: true
+    //devtools: true
   });
   console.log(colors.green(
   `===============================================================================================\n`+
@@ -90,7 +90,7 @@ async function run() {
   //ipアドレス確認
   if (headless == false) {
     const page_ipinfo = await browser.newPage();
-    page_ipinfo.goto("https://www.cman.jp/network/support/go_access.cgi");
+    page_ipinfo.goto("https://ifconfig.me/");
     await delay(10000);
     await page.bringToFront();
   }
@@ -123,9 +123,7 @@ async function run() {
     });
   }
 
-  async function patrol(page, ) {
-  }
-
+  /*
   await access(page, mysite.origin, "https://www.google.com/");
 
   //debug
@@ -243,6 +241,22 @@ async function run() {
   console.log(`ターゲットサイトの総閲覧数: ${patrol}回`.red);
   console.log(`ターゲットサイトの総滞在時間: ${completeTime / 1000}秒`.red);
   console.log("complete!!".green);
+  */
+  
+  //ipアドレス変更
+  options.device = deviceDescriptors['iPad'];
+  await page.emulate(options.device); // デバイス適用
+  await access(page, process.env.ROOTER_ADRESS, page.url());
+  await page.waitForSelector('input[name="user_type"]', {timeout: 0});
+  await page.type('input[name="user_type"]', process.env.ROOTER_USERNAME);
+  await page.waitForSelector('input[name="input_password"]', {timeout: 0});
+  await page.type('input[name="input_password"]', process.env.ROOTER_PASSWORD);
+  await page.click("#login");
+  await access(page, process.env.ROOTER_RESET_URL, page.url());
+  await page.waitForSelector("#button_reboot", {timeout: 0});
+  await page.click("#button_reboot");
+  await page.waitForSelector("#pop_confirm", {timeout: 0});
+  await page.click("#pop_confirm");
 
   await browser.close();
 }
