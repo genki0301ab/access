@@ -123,7 +123,6 @@ async function run() {
     });
   }
 
-  /*
   await access(page, mysite.origin, "https://www.google.com/");
 
   //debug
@@ -241,9 +240,9 @@ async function run() {
   console.log(`ターゲットサイトの総閲覧数: ${patrol}回`.red);
   console.log(`ターゲットサイトの総滞在時間: ${completeTime / 1000}秒`.red);
   console.log("complete!!".green);
-  */
   
   //ipアドレス変更
+  /*
   options.device = deviceDescriptors['iPad'];
   await page.emulate(options.device); // デバイス適用
   await access(page, process.env.ROOTER_ADRESS, page.url());
@@ -259,5 +258,6 @@ async function run() {
   await page.click("#pop_confirm");
 
   await browser.close();
+  */
 }
 run();
